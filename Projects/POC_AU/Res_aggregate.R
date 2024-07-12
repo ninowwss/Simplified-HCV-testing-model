@@ -70,6 +70,8 @@ save(Res_numbox,
      file = file.path(OutputFolder,
                       paste0(project_name,"Res_numbox" ,".rda"))) 
 
+
+
 Resflow_year_pop <- list()
 
 for(i in names(Res_dt)){ 
@@ -129,6 +131,9 @@ for(i in names(Resflow_sc_year_pop)){
   }
 }
 
+
+
+
 # separate cost of DAA and other costs related to treatment initiation  
 # treatment and retreat 
 # data sum in yearly
@@ -144,7 +149,7 @@ for(i in names(Res_dt)){
       mutate(year = c(rep(seq(1, endY - 2, 1), each = POC_AU$npops*1/POC_AU$timestep),
                       c(rep(endY - 1, POC_AU$npops*(1/POC_AU$timestep)))))%>%
       group_by(year, population)%>%
-      summarise(across(c(par_col),~ sum(.x, na.rm = FALSE)))%>%
+      summarise(across(c(par_col),~ sum(.x, na.rm = TRUE)))%>%
       arrange(year)
     }
 }
@@ -216,7 +221,7 @@ for(i in names(RescostDAA)){
   for(indic in names(RescostDAA[[1]])){
     RescostDAA_totalpop[[i]][[indic]] <- RescostDAA[[i]][[indic]]%>%as_tibble()%>%
       ungroup()%>%arrange(year)%>%group_by(year)%>%
-      summarise(across(c(par_col),~ sum(.x, na.rm = FALSE)))%>%ungroup()
+      summarise(across(c(par_col),~ sum(.x, na.rm = TRUE)))%>%ungroup()
   }
   
 }
@@ -235,7 +240,7 @@ for(i in names(RescostDAA_sc)){
   for(indic in names(RescostDAA_sc[[1]])){ 
     RescostDAA_sc_totalpop[[i]][[indic]] <- RescostDAA_sc[[i]][[indic]]%>%ungroup()%>%
       arrange(year)%>%group_by(year)%>%
-      summarise(across(c(par_col),~ sum(.x, na.rm = FALSE)))%>%ungroup()
+      summarise(across(c(par_col),~ sum(.x, na.rm = TRUE)))%>%ungroup()
     }
   }
 
@@ -284,6 +289,7 @@ for(i in names(Rescost_DAA_dt)){
   
   }
 
+
 Rescost_sc_year <- list() 
 
 for(i in names(Rescost_DAA_sc_dt)){ 
@@ -331,11 +337,11 @@ for(i in names(Rescost_year)){
       as.data.frame()%>%
       ungroup()%>%
       group_by(year)%>%
-      summarise(across(c(par_col),~ sum(.x, na.rm = FALSE)))%>%ungroup()
+      summarise(across(c(par_col),~ sum(.x, na.rm = TRUE)))%>%ungroup()
   }
 }
 
-tail(Resflow_year_all$dfList_NP_2023$newInfections,6)
+
 for(i in names(Rescost_year)){ 
   Rescost_year_all[[i]][["cost_totalDAA_Cap"]] <- 
     Rescost_year_all[[i]][["cost_totalDAA"]]%>%

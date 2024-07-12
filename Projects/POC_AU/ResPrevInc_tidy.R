@@ -353,8 +353,8 @@ HCVIncp_subpop <- rbind(HCVIncp_subpop_C, HCVIncp_subpop_P)%>%arrange(year, popu
 
 save(tempPrev_subpop, tempPrev_setting,
      tempPrevRNA_subpop, tempPrevRNA_setting,
-     HCVInc_subpop, HCVInc_setting, 
-     HCVIncre_subpop, HCVIncp_subpop, 
+     HCVInc_subpop, HCVInc_setting, HCVInfect_subpop,
+     HCVIncre_subpop, HCVIncp_subpop, HCVInfectRE_subpop, 
      file = file.path(OutputFolder,
                       paste0(project_name,"PrevInc_sq" ,".rda")))
 
@@ -362,8 +362,10 @@ save(tempPrev_subpop, tempPrev_setting,
 rm(tempPrev_subpop, tempPrev_setting,
    tempPrevRNA_subpop, tempPrevRNA_setting,
    HCVInc_subpop, HCVInc_setting, 
-   HCVIncre_subpop, HCVIncp_subpop, param_sq) 
+   HCVIncre_subpop, HCVIncp_subpop, param_sq, HCVInfectRE_subpop,HCVInfect_subpop ) 
 gc()
+
+
 
 ################################# scenarios ####################################
 
@@ -731,7 +733,7 @@ for(i in names(Sce_np)){
   save(tempPrev_subpop, tempPrev_setting,
        tempPrevRNA_subpop, tempPrevRNA_setting,
        HCVInc_subpop, HCVInc_setting, 
-       HCVIncre_subpop, HCVIncp_subpop, 
+       HCVIncre_subpop, HCVIncp_subpop, HCVInfect_subpop, HCVInfectRE_subpop,
        file = file.path(OutputFolder,
                         paste0(project_name,"PrevInc_", i ,".rda")))
   
@@ -755,6 +757,8 @@ name_file <- sub("POC_AUPrevInc_", "", files)
 
 names(PrevInc) <- tools::file_path_sans_ext(name_file)
 
+View(PrevInc$dfList_NP_2023$tempPrevRNA_subpop%>%mutate(year = year +2014)%>%filter(year %in% c(2022,2030)))
+options(scipen = 999)
 
 PrevInc_range <- list()
 
@@ -781,9 +785,11 @@ for(i in names(PrevInc)){
 }
 
 # turn list inside out 
-PrevInc_range_bind <- PrevInc_range%>% transpose()%>%
+PrevInc_range_bind <- PrevInc_range%>%purrr::transpose()%>%
   lapply(., function(x) dplyr::bind_rows(x, .id = 'scenario'))
 names(PrevInc_range_bind) <- names(PrevInc_range[[1]])
+
+write.xlsx(x = PrevInc_range_bind, file.path(OutputFolder, "PrevInc_epi.xlsx"), append = TRUE)
 
 pop_labname <- c("PWID in community",  "Former PWID in community", 
                  "PWID in prisons",  "Former PWID in prisons", 
@@ -830,7 +836,7 @@ obserdt_name <- c(obserdt_name, c(files[grep("HCVInc", files)]))
 
 observedt_lst <- list() 
 
-observedt_lst[[names(PrevInc_trajectory)[1]]] <- 
+observedt_lst[[names(PrevInc_trajectory)[2]]] <- 
   read.csv(file.path(paste0(DataFolder%>%dirname(), "/HCVPrevRNA_setting_POC_AU.csv")), header = TRUE)%>%
   as.data.frame()%>%mutate(time = year- POC_AU$cabY + 1, 
                            realPop = HCVPrev*100,
@@ -840,7 +846,7 @@ observedt_lst[[names(PrevInc_trajectory)[1]]] <-
                                                levels = c("commu", "prisons"), 
                                                labels = c("Community", "Prisons" )))
 
-observedt_lst[[names(PrevInc_trajectory)[2]]] <- 
+observedt_lst[[names(PrevInc_trajectory)[3]]] <- 
   read.csv(file.path(paste0(DataFolder%>%dirname(), "/HCVIncP_POC_AU.csv")), header = TRUE)%>%
   as.data.frame()%>%mutate(time = year- POC_AU$cabY + 1, 
                            realPop = HCVInc,
@@ -851,7 +857,7 @@ observedt_lst[[names(PrevInc_trajectory)[2]]] <-
                                                labels = pop_labname ))
 
 
-observedt_lst[[names(PrevInc_trajectory)[3]]] <- 
+observedt_lst[[names(PrevInc_trajectory)[5]]] <- 
   read.csv(file.path(paste0(DataFolder%>%dirname(), "/HCVInc_POC_AU.csv")), header = TRUE)%>%
   as.data.frame()%>%mutate(time = year- POC_AU$cabY + 1, 
                            realPop = HCVInc*100,
@@ -861,7 +867,7 @@ observedt_lst[[names(PrevInc_trajectory)[3]]] <-
                                                levels = POC_AU$popNames, 
                                                labels = pop_labname ))
 
-observedt_lst[[names(PrevInc_trajectory)[4]]] <- 
+observedt_lst[[names(PrevInc_trajectory)[6]]] <- 
   read.csv(file.path(paste0(DataFolder%>%dirname(), "/HCVPrevRNA_POC_AU.csv")), header = TRUE)%>%
   as.data.frame()%>%mutate(time = year- POC_AU$cabY + 1, 
                            realPop = HCV.RNA.prevalence*100,
@@ -871,7 +877,7 @@ observedt_lst[[names(PrevInc_trajectory)[4]]] <-
                                                levels = POC_AU$popNames, 
                                                labels = pop_labname ))
   
-observedt_lst[[names(PrevInc_trajectory)[5]]] <- 
+observedt_lst[[names(PrevInc_trajectory)[7]]] <- 
   read.csv(file.path(paste0(DataFolder%>%dirname(), "/HCVPrev_setting_POC_AU.csv")), header = TRUE)%>%
   as.data.frame()%>%mutate(time = year- POC_AU$cabY + 1, 
                            realPop = HCVPrev*100,
@@ -881,7 +887,7 @@ observedt_lst[[names(PrevInc_trajectory)[5]]] <-
                                                levels = c("commu", "prisons"), 
                                                labels = c("Community", "Prisons")))
 
-observedt_lst[[names(PrevInc_trajectory)[6]]] <- 
+observedt_lst[[names(PrevInc_trajectory)[8]]] <- 
   read.csv(file.path(paste0(DataFolder%>%dirname(), "/HCVInc_setting_POC_AU.csv")), header = TRUE)%>%
   as.data.frame()%>%mutate(time = year- POC_AU$cabY + 1, 
                            realPop = HCVInc*100,
@@ -891,7 +897,7 @@ observedt_lst[[names(PrevInc_trajectory)[6]]] <-
                                                levels = c("commu", "prisons"), 
                                                labels = c("Community", "Prisons")))
 
-observedt_lst[[names(PrevInc_trajectory)[7]]] <- 
+observedt_lst[[names(PrevInc_trajectory)[9]]] <- 
   read.csv(file.path(paste0(DataFolder%>%dirname() ,"/HCVPrev_POC_AU.csv")), header = TRUE)%>%
   as.data.frame()%>%mutate(time = year- POC_AU$cabY + 1, 
                            realPop = HCV.seroprevalence*100,
@@ -901,7 +907,7 @@ observedt_lst[[names(PrevInc_trajectory)[7]]] <-
                                                levels = POC_AU$popNames, 
                                                labels = pop_labname ))
 
-observedt_lst[[names(PrevInc_trajectory)[8]]] <- 
+observedt_lst[[names(PrevInc_trajectory)[10]]] <- 
   read.csv(file.path(paste0(DataFolder%>%dirname(), "/HCVIncRe_POC_AU.csv")), header = TRUE)%>%
   as.data.frame()%>%mutate(time = year- POC_AU$cabY + 1, 
                            realPop = HCVInc,
@@ -1109,17 +1115,18 @@ for(i in c("HCVIncp_subpop","HCVInc_subpop","tempPrevRNA_subpop",
 PrevInc_p <- list()
 
 ylab_PrevInc <- list("HCV RNA prevalence (%)",
-                     "Incidence of primary HCV infeciton (100 PY)", 
+                     "Incidence of primary HCV infeciton (100 PY)",
+                     "Number of HCV reinfection",
                      "HCV incidence (100 PY)", 
                      "HCV RNA prevalecne (%)", 
                      "HCV seroprevalecne (%)", 
                      "HCV incidence (100 PY)", 
                      "HCV seroprevalence (%)", 
                      "HCV reinfection incidence (100 PY)") 
-  
-names(ylab_PrevInc) <- names(PrevInc_trajectory)
 
-for(i in names(PrevInc_trajectory)){ 
+names(ylab_PrevInc) <- names(PrevInc_trajectory)[-c(1,10)]
+
+for(i in names(PrevInc_trajectory)[-c(1,10)]){ 
   PrevInc_p[[i]] <- PrevInc_plot(pj = POC_AU, 
                                  dt = PrevInc_trajectory[[i]], 
                                  obdt = observedt_lst[[i]], 
@@ -1185,6 +1192,20 @@ for(i in names(PrevInc_p)){
          PrevInc_p[[i]], 
          width = 6, height = 8, bg = "white", dpi = 300)
 }
+
+#### reinfection number #### 
+
+unique(PrevInc_trajectory$HCVInfect_subpop$scenario)
+
+
+x <- rbind(PrevInc_trajectory$HCVInfect_subpop%>%mutate(indicator = "Total new infections"), 
+      PrevInc_trajectory$HCVInfectRE_subpop%>%mutate(indicator = "Reinfections"))
+ggplot(data = x%>%filter(scenario == "Achievement 2023")%>%
+         mutate(year = year + POC_AU$cabY - 1), 
+       aes(x = year, y = best, colour = indicator)) + 
+  geom_line() + facet_wrap(.~population, scale = "free") + theme_bw() + 
+  scale_x_continuous(limits = c(2015, 2051), breaks = seq(2015, 2050,5))
+
 
 # other scenarios 
 PrevInc_range_sce <- list()
@@ -1276,20 +1297,14 @@ PrevInc_sce_p[[2]] <- PrevInc_sce_p[[2]] +
                   list(
                     scale_new(1,
                               scale_y_continuous(limits = 
-                                                   c(0, 3))),
+                                                   c(0, 20))),
                     scale_new(2,
                               scale_y_continuous(limits = 
-                                                   c(0, 0.5))),
+                                                   c(0, 20))),
                     
                     scale_new(3,
                               scale_y_continuous(limits = 
-                                                   c(0, 15))),
-                    scale_new(4,
-                              scale_y_continuous(limits = 
-                                                   c(0, 3))),
-                    scale_new(5,
-                              scale_y_continuous(limits = 
-                                                   c(0, 1))))) 
+                                                   c(0, 20)))))
 
 PrevInc_sce_p[[3]] <- PrevInc_sce_p[[3]] + 
   facet_custom (~population,
@@ -1320,20 +1335,20 @@ PrevInc_sce_p[[4]] <- PrevInc_sce_p[[4]] +
                   list(
                     scale_new(1,
                               scale_y_continuous(limits = 
-                                                   c(0, 20))),
+                                                   c(0, 500))),
                     scale_new(2,
                               scale_y_continuous(limits = 
-                                                   c(0, 15))),
+                                                   c(0, 500))),
                     
                     scale_new(3,
                               scale_y_continuous(limits = 
-                                                   c(0, 40))),
+                                                   c(0, 500))),
                     scale_new(4,
                               scale_y_continuous(limits = 
-                                                   c(0, 20))),
+                                                   c(0, 500))),
                     scale_new(5,
                               scale_y_continuous(limits = 
-                                                   c(0, 1))))) 
+                                                   c(0, 10))))) 
 
 PrevInc_sce_p[[5]] <- PrevInc_sce_p[[5]] + 
   facet_custom (~population,
@@ -1371,25 +1386,19 @@ PrevInc_sce_p[[6]] <- PrevInc_sce_p[[6]] +
 
 PrevInc_sce_p[[7]] <- PrevInc_sce_p[[7]] + 
   facet_custom (~population,
-                scales = "free", ncol = 2,
+                scales = "free", ncol = 1,
                 scale_overrides = 
                   list(
                     scale_new(1,
                               scale_y_continuous(limits = 
-                                                   c(0, 60))),
+                                                   c(0, 80))),
                     scale_new(2,
                               scale_y_continuous(limits = 
                                                    c(0, 80))),
                     
                     scale_new(3,
                               scale_y_continuous(limits = 
-                                                   c(0, 80))),
-                    scale_new(4,
-                              scale_y_continuous(limits = 
-                                                   c(0, 80))),
-                    scale_new(5,
-                              scale_y_continuous(limits = 
-                                                   c(0, 2.5))))) 
+                                                   c(0, 80)))))
 
 PrevInc_sce_p[[8]] <- PrevInc_sce_p[[8]] + 
   facet_custom (~population,
@@ -1401,21 +1410,21 @@ PrevInc_sce_p[[8]] <- PrevInc_sce_p[[8]] +
                                                    c(0, 5))),
                     scale_new(2,
                               scale_y_continuous(limits = 
-                                                   c(0, 0.5))),
+                                                   c(0, 5))),
                     
                     scale_new(3,
                               scale_y_continuous(limits = 
-                                                   c(0, 25))),
-                    scale_new(4,
-                              scale_y_continuous(limits = 
-                                                   c(0, 5))),
-                    scale_new(5,
-                              scale_y_continuous(limits = 
-                                                   c(0, 1))))) 
+                                                   c(0, 10))))) 
 
-PrevInc_sce_p[[8]]
+
 for(i in names(PrevInc_sce_p)){ 
   ggsave(file=file.path(OutputFig, paste0(i,"_sce" ,".png")), 
          PrevInc_sce_p[[i]], 
          width = 9, height = 6, bg = "white", dpi = 300)
 }
+
+save(PrevInc_range_bind,
+     file = file.path(OutputFolder,
+                      paste0(project_name,"PrevInc_plot_dt" ,".rda"))) 
+
+

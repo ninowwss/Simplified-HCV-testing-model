@@ -266,8 +266,8 @@ for ( i in 2:dim(dfList$eta)[[2]]){
   dfList$eta[2, i, c(varyingYpoint_int:POC_AU$npts)] <- 
     c(seq(as.numeric(intVal[2]), as.numeric(TreatInit[2]), length = (varyingYpoint_fir)),
       seq(as.numeric(TreatInit[2]), as.numeric(TreatInit[2]), length = (varyingYpoint_mid - varyingYpoint_fir)),
-      seq(as.numeric(TreatInit[2]), 0.3, length = (varyingYpoint_end - varyingYpoint_mid)),
-      rep(0.3, POC_AU$npts - varyingYpoint_end))
+      seq(as.numeric(TreatInit[2]), 0.25, length = (varyingYpoint_end - varyingYpoint_mid)),
+      rep(0.25, POC_AU$npts - varyingYpoint_end))
   
   
   
@@ -277,8 +277,8 @@ for ( i in 2:dim(dfList$eta)[[2]]){
 varying_Yint <- 2015
 varying_Yfir <- 2019
 varying_Ymid <- 2020
-varying_Ymid2 <- 2022
-varying_Yend <- 2023
+varying_Ymid2 <- 2021
+varying_Yend <- 2022
 calibration_Y <- 2015
 varyingYpoint_int <- (varying_Yint - calibration_Y)/POC_AU$timestep + 1
 varyingYpoint_fir <- (varying_Yfir - calibration_Y)/POC_AU$timestep + 1
@@ -295,16 +295,16 @@ endY <- 10
 for ( i in 2:dim(dfList$eta)[[2]]){
   dfList$tau_ab[1, i, c(varyingYpoint_int:POC_AU$npts)] <- 
     c(seq(as.numeric(intVal_ab[1]),as.numeric(intVal_ab[1]) , length = (varyingYpoint_fir - 2)),
-      seq(as.numeric(intVal_ab[1]), as.numeric(intVal_ab[1])*1.18, length =(varyingYpoint_mid - varyingYpoint_fir + 1)),
-      rep(as.numeric(intVal_ab[1])*1.18, length = varyingYpoint_mid2 - varyingYpoint_mid - 1),
-      seq(as.numeric(intVal_ab[1])*1.18, as.numeric(intVal_ab[1])*1.18*1.05, length =(varyingYpoint_end - varyingYpoint_mid2 + 1)),
-      rep(as.numeric(as.numeric(intVal_ab[1])*1.18*1.05), POC_AU$npts - varyingYpoint_end + 1))
+      seq(as.numeric(intVal_ab[1]), as.numeric(intVal_ab[1]), length =(varyingYpoint_mid - varyingYpoint_fir - 1)),
+      seq(as.numeric(intVal_ab[1]), as.numeric(intVal_ab[1]), length = varyingYpoint_mid2 - varyingYpoint_mid + 1),
+      seq(as.numeric(intVal_ab[1]), as.numeric(intVal_ab[1])*1.18, length =(varyingYpoint_end - varyingYpoint_mid2 + 1)),
+      rep(as.numeric(as.numeric(intVal_ab[1])*1.18), POC_AU$npts - varyingYpoint_end + 1))
 
   dfList$tau_ab[2, i, c(varyingYpoint_int:POC_AU$npts)] <- 
     c(seq(as.numeric(intVal_ab[2]),as.numeric(intVal_ab[2]) , length = (varyingYpoint_fir - 2)),
-      seq(as.numeric(intVal_ab[2]), as.numeric(intVal_ab[2])*1.18, length =(varyingYpoint_mid - varyingYpoint_fir + 1)),
-      rep(as.numeric(intVal_ab[2])*1.18, length = varyingYpoint_mid2 - varyingYpoint_mid - 1),
-      seq(as.numeric(intVal_ab[2])*1.18, as.numeric(intVal_ab[2])*1.18*1.05, length =(varyingYpoint_end - varyingYpoint_mid2 + 1)),
+      seq(as.numeric(intVal_ab[2]), as.numeric(intVal_ab[2]), length =(varyingYpoint_mid - varyingYpoint_fir - 1)),
+      seq(as.numeric(intVal_ab[2]), as.numeric(intVal_ab[2]), length = varyingYpoint_mid2 - varyingYpoint_mid + 1),
+      seq(as.numeric(intVal_ab[2]), as.numeric(intVal_ab[2])*1.18, length =(varyingYpoint_end - varyingYpoint_mid2 + 1)),
       rep(as.numeric(as.numeric(intVal_ab[1])*1.18*1.05), POC_AU$npts - varyingYpoint_end + 1))
 
   dfList$tau_RNA[1, i, c(varyingYpoint_int:POC_AU$npts)] <- 
@@ -399,20 +399,20 @@ varyingYpoint_end <- (varying_Yend - calibration_Y)/POC_AU$timestep + 1
 for ( i in 2:dim(dfList$eta)[[2]]){  
   dfList$eta[3, i, c(varyingYpoint_int:POC_AU$npts)] <- 
     c(seq(as.numeric(intVal[3]), 0.6, length = (varyingYpoint_fir)),
-      seq(0.6, 0.9998, length = (varyingYpoint_mid - varyingYpoint_fir)),
-      rep(0.9998, POC_AU$npts - varyingYpoint_mid))
+      seq(0.6, 0.9995, length = (varyingYpoint_mid - varyingYpoint_fir)),
+      rep(0.9995, POC_AU$npts - varyingYpoint_mid))
   
   dfList$eta[4, i, c(varyingYpoint_int:POC_AU$npts)] <- 
     c(seq(as.numeric(intVal[3]), 0.6, length = (varyingYpoint_fir)),
-      seq(0.6, 0.9998, length = (varyingYpoint_mid - varyingYpoint_fir)),
-      rep(0.9998, POC_AU$npts - varyingYpoint_mid))
+      seq(0.6, 0.9995, length = (varyingYpoint_mid - varyingYpoint_fir)),
+      rep(0.9995, POC_AU$npts - varyingYpoint_mid))
   
   
   
   dfList$eta[5, i, c(varyingYpoint_int:POC_AU$npts)] <- 
     c(seq(as.numeric(intVal[3]), 0.6, length = (varyingYpoint_fir)),
-      seq(0.6, 0.9998, length = (varyingYpoint_mid - varyingYpoint_fir)),
-      rep(0.9998, POC_AU$npts - varyingYpoint_mid))
+      seq(0.6, 0.9995, length = (varyingYpoint_mid - varyingYpoint_fir)),
+      rep(0.9995, POC_AU$npts - varyingYpoint_mid))
   
   
   dfList$rho[1, i, c(varyingYpoint_int:POC_AU$npts)] <- 
@@ -427,22 +427,22 @@ for ( i in 2:dim(dfList$eta)[[2]]){
   
   dfList$rho[3, i, c(varyingYpoint_int:POC_AU$npts)] <- 
     c(seq(0, 0.6, length = (varyingYpoint_fir)),
-      seq(0.6, 0.9998, length = (varyingYpoint_mid - varyingYpoint_fir)),
-      rep(0.9998, POC_AU$npts - varyingYpoint_mid))
+      seq(0.6, 0.999, length = (varyingYpoint_mid - varyingYpoint_fir)),
+      rep(0.999, POC_AU$npts - varyingYpoint_mid))
   
   
   dfList$rho[4, i, c(varyingYpoint_int:POC_AU$npts)] <- 
     c(seq(0, 0.6, length = (varyingYpoint_fir)),
-      seq(0.6, 0.9998, length = (varyingYpoint_mid - varyingYpoint_fir)),
-      rep(0.9998, POC_AU$npts - varyingYpoint_mid))
+      seq(0.6, 0.999, length = (varyingYpoint_mid - varyingYpoint_fir)),
+      rep(0.999, POC_AU$npts - varyingYpoint_mid))
   
   
   
   
   dfList$rho[5, i, c(varyingYpoint_int:POC_AU$npts)] <- 
     c(seq(0, 0.6, length = (varyingYpoint_fir)),
-      seq(0.6,0.9998, length = (varyingYpoint_mid - varyingYpoint_fir)),
-      rep(0.9998, POC_AU$npts - varyingYpoint_mid))
+      seq(0.6,0.999, length = (varyingYpoint_mid - varyingYpoint_fir)),
+      rep(0.999, POC_AU$npts - varyingYpoint_mid))
   
   
 }

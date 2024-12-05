@@ -92,7 +92,7 @@ tic <- proc.time()
 Num_test_person_NP <- read_excel(paste0(data_path, "/01. DATA/Num_test_person_NP.xlsx"))
 # assuming actively C_PWID and C_fPWID roughly equals to the pop size of CPWID
 # We accounted the transition in prison setting regarding its high dynamic nature 
-Num_test_person_NP <- Num_test_person_NP%>%mutate(num_pop = c(80000, 80000, 80000, 80000))
+Num_test_person_NP <- Num_test_person_NP%>%na.omit()%>%mutate(num_pop = c(80000, 80000, 80000, 80000))
 
 Num_test_person_NP <- Num_test_person_NP%>%
   mutate(coverage = num_person/num_pop, 
@@ -392,9 +392,9 @@ frac_ab[["2024"]] <- c(0.6, 0.2)
 
 # calibrating the fm value 
 fm <- list()
-fm[["2022"]] <- c(1, 1, 12, 12, 1)
-fm[["2023"]] <- c(1, 1, 14, 14, 1)
-fm[["2024"]] <- c(1, 1, 12, 12, 1)
+fm[["2022"]] <- c(1, 1, 9, 9, 1)
+fm[["2023"]] <- c(1, 1, 16, 16, 1)
+fm[["2024"]] <- c(1, 1, 16, 16, 1)
 fm[["2025"]] <- c(0.9, 0.9, 6, 6, 1)
 fm[["2026"]] <- c(0.9, 0.9, 6, 6, 1)
 fm[["2027"]] <- c(0.9, 0.9, 5.6, 5.6, 1)
@@ -848,4 +848,110 @@ ggplot(data = x%>%filter(index == "Ab"), aes(x = year, y = value)) +
 
 
 #################################################################################
+Sce_np$dfList_NP_2023$newTreatment
 
+calibrateFlow_sc <- Sce_np$dfList_NP_2023[names(Sce_np$dfList_NP_2023)%in%
+                                 c("newTreatment", "newRetreat", 
+                                   "newTreatment_sc")]
+flow_sub <- list()
+
+
+flow_sub <- lapply(names(calibrateFlow_sc), function(x){ 
+  a <- indicatorResults(POC_AU, calibrateFlow_sc, x, 
+                        pop=POC_AU$popNames,
+                        paramR = NULL, range = NULL,
+                        endY = endY)
+})
+
+names(flow_sub) <- names(calibrateFlow_sc)
+
+
+flow_setting <- lapply(flow_sub, function(x){ 
+  
+  a <- x%>%
+    mutate(setting = ifelse(population %in% c("C_PWID", "C_fPWID"), 
+                            "commu", "prisons"))
+  
+  a <- a%>%group_by(year, setting)%>%summarise_at("best", sum)%>%
+    mutate(population = setting)%>%select(-setting)
+}) 
+
+x <- cbind(flow_setting$newTreatment[, c(1:3)], flow_setting$newRetreat[, 2], 
+      flow_setting$newTreatment_sc[,2])
+View(x)
+N_treatment <- cbind(year = rep(seq(POC_AU$startYear , endY-1 ,1), 
+                                each = 2),
+                     population = flow_setting$newTreatment[ ,3],
+                     as.data.frame(flow_setting$newTreatment[, -c(1,3)] + 
+                                     flow_setting$newRetreat[, -c(1,3)] + 
+                                     flow_setting$newTreatment_sc[, -c(1,3)]))%>%
+  tibble::as_tibble()%>%
+  mutate(population = factor(population, 
+                             levels = c("commu", "prisons"), 
+                             labels = c("Community", "Prisons" )))
+
+
+
+HCVtreatinitN_setting_fit <-read.csv(file.path(paste0(DataFolder%>%dirname(), "/HCVtreatinitN_setting_POC_AU.csv")), header = TRUE)%>%
+  as.data.frame()%>%mutate(time = year- POC_AU$cabY + 1, 
+                           realPop = realpop,
+                           up = upper,
+                           low = lower,
+                           population = factor(population, 
+                                               levels = c("commu", "prisons"), 
+                                               labels = c("Community", "Prisons")))
+
+endY_plot <- 2030- POC_AU$cabY
+
+N_treatment_setting_p <- indicatorPlot(POC_AU, N_treatment, 
+                                       ylabel = "N",
+                                       xlimits = c(POC_AU$startYear, 
+                                                   (POC_AU$startYear+endY_plot), 5),
+                                       calibration_Y = POC_AU$cabY,
+                                       rangeun = NULL, 
+                                       groupPlot = NULL, 
+                                       facetPlot = population,
+                                       observationData = HCVtreatinitN_setting_fit, 
+                                       simulateYear = POC_AU$simY) + 
+  ggtitle("Number of treatment init") + theme_bw()
+
+N_treatment_setting_p <- N_treatment_setting_p + 
+  facet_custom (~population,
+                scales = "free", ncol = 2,
+                scale_overrides = 
+                  list(
+                    scale_new(1,
+                              scale_y_continuous(limits = 
+                                                   c(0, 40000))),
+                    scale_new(2,
+                              scale_y_continuous(limits = 
+                                                   c(0, 5000)))))
+N_treatment_setting_p 
+N_treatment%>%filter(year %in% c(8,9))
+ggplot(data = N_treatment%>%filter(year<=15 & population == "Prisons"), 
+       aes(x = year, y = best)) + 
+  geom_line() + geom_point(aes(x = 7, y = 2679))
+
+unlist(c(N_treatment%>%group_by(year)%>%summarise(best= sum(best))%>%mutate(year = year + POC_AU$cabY -1)%>%
+  filter(year%in% seq(2015,2023,1))%>%select(best)))
+
+N_treatment%>%filter(year%in% c(8,9))
+
+HCVtreatinitN_fit <-read.csv(file.path(paste0(DataFolder%>%dirname(), "/HCVtreatinitN_POC_AU.csv")), header = TRUE)%>%
+  as.data.frame()%>%mutate(time = year- POC_AU$cabY + 1, 
+                           realPop = as.numeric(realpop),
+                           up = as.numeric(upper),
+                           low = as.numeric(lower))
+
+
+N_treatment%>%group_by(year)%>%summarise(best = sum(best))%>%indicatorPlot(POC_AU,. , 
+                                       ylabel = "N",
+                                       xlimits = c(POC_AU$startYear, 
+                                                   (POC_AU$startYear+endY_plot), 5),
+                                       calibration_Y = POC_AU$cabY,
+                                       rangeun = NULL, 
+                                       groupPlot = NULL, 
+                                       facetPlot = NULL,
+                                       observationData = HCVtreatinitN_fit, 
+                                       simulateYear = POC_AU$simY) + 
+  ggtitle("Number of treatment init") + theme_bw()

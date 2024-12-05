@@ -627,15 +627,21 @@ HCVMSM <- function(HCV, parama, initialPop, disease_progress,
     
     II <- matrix(0, ncol = 1, nrow = npops)
     
-    for(i in 1: npops){ 
-      if(proj %in% c("POC_AU", "TWPrisoners")){ 
-        II[i,] <- I[i,]/N[i, ]
-      }else{ 
-        II[i, ] <-  Iall/(Sall + Iall)
-        
-        }
+    if(proj %in% c("POC_AU", "TWPrisoners")){ 
+      II[1,] <- (I[1,] + I[2,])/(N[1, ] + N[2, ])
+      II[2,] <- (I[1,] + I[2,])/(N[1, ] + N[2, ])
+      II[3,] <- (I[3,] + I[4,] + 0*I[5, ])/(N[3, ] + N[4, ] + 0*N[5, ])
+      II[4,] <- (I[3,] + I[4,] + 0*I[5, ])/(N[3, ] + N[4, ] + 0*N[5, ])
+      II[5,] <- (0*I[3,] + 0*I[4,] + I[5, ])/(0*N[3, ] + 0*N[4, ] + N[5, ])
       
+    }else{ 
+      for(i in 1: npops){   
+        II[i, ] <-  Iall/(Sall + Iall)
       }
+    }
+   
+     
+     
 
   
     II[is.nan(II)] <- 0

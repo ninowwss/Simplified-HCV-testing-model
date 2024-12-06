@@ -2,7 +2,7 @@
 # {Res_dt.rda} and {epiRes_timestep.rda} 
 # we aggregate the number to annual numbers and apply cost discount in this script. 
 # three datasets we work on in this script: {Num_box}, {Resflow_dt}, {Rescost_dt}
-
+gc()
 rm(list = ls())
 tic <- proc.time()
 

@@ -79,7 +79,8 @@ paramset_scenario <- function(paramDflist, lhs, dflist_LL, dflist_UU){
 
 attach(file.path(OutputFolder, paste0(project_name, "scenario_cascade.rda")))
 
-sce_name <- names(scenario_cascade) 
+sce_name <- names(scenario_cascade)[!names(scenario_cascade)%in%
+                                      c("dfList_NPexp_B", "dfList_NPexp_C")] 
 
 start_lower <- 0.75
 

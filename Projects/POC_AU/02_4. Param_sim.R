@@ -1,5 +1,5 @@
 rm(list = ls())
-
+gc()
 project_name <- "POC_AU"
 
 codefun_path <- paste("/Users/jjwu/Documents/Simplified-HCV-testing-model")
@@ -91,11 +91,12 @@ save(param_sq,
                       paste0(project_name, "param_simulation", ".rda")))
 
 rm(param_sq) 
-
+gc()
 ##### scenarios ##### 
 load(file.path(OutputFolder, paste0(project_name, "scenario_cascade.rda")))
 
-sce_name <- names(scenario_cascade)
+sce_name <- names(scenario_cascade)[!names(scenario_cascade)%in%
+                                                             c("dfList_NPexp_B", "dfList_NPexp_C")] 
 
 rm(scenario_cascade)
 
@@ -131,5 +132,9 @@ for(n in sce_name){
   
   rm(scenario_p, param_scenario)
   gc()
-  }
+}
+
+
+
+
 

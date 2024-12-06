@@ -1,7 +1,7 @@
 # result summary for each scenario
-
+gc()
 rm(list = ls())
-
+gc()
 project_name <- "POC_AU"
 
 codefun_path <- paste("/Users/jjwu/Documents/Simplified-HCV-testing-model")

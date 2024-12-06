@@ -1,3 +1,4 @@
+gc()
 rm(list = ls())
 
 project_name <- "POC_AU"
@@ -760,9 +761,11 @@ names(PrevInc) <- tools::file_path_sans_ext(name_file)
 View(PrevInc$dfList_NP_2023$tempPrevRNA_subpop%>%mutate(year = year +2014)%>%filter(year %in% c(2022,2030)))
 options(scipen = 999)
 
+#dropping plot_dt file 
+# names(PrevInc)[-7]
 PrevInc_range <- list()
 
-for(i in names(PrevInc)){
+for(i in names(PrevInc)[-7]){
   for( n in names(PrevInc[[1]])){ 
     if(n%in% c("tempPrevRNA_setting" ,"tempPrev_setting", "HCVInc_setting")){ 
       PrevInc_range[[i]][[n]] <- 

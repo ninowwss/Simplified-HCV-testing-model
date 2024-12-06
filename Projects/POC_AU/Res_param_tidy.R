@@ -1,3 +1,6 @@
+gc()
+rm(list = ls())
+gc()
 library(ggplot2)
 library(ggrepel)
 library(directlabels)

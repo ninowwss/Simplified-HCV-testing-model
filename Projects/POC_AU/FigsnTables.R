@@ -2034,9 +2034,9 @@ incremental_cost <- ggplot(x_total_incre, aes(x = year, colour = scenario) ) +
             ) + 
   theme_Publication() + 
   scale_x_continuous(expand = c(0,0), limits = c(2021,2041), breaks = seq(2021, 2041, 1)) + 
-  scale_y_continuous(limits = c(-300000000, 100000000), 
-                     breaks = seq(-300000000, 100000000, 50000000), 
-                     labels = seq(-300000000, 100000000, 50000000)/1000000) + 
+  scale_y_continuous(limits = c(-300000000, 50000000), 
+                     breaks = seq(-300000000, 50000000, 10000000), 
+                     labels = seq(-300000000, 50000000, 10000000)/1000000) + 
   scale_color_manual(values = c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442")) + 
   scale_linetype_manual(values = c("dashed", "solid", "solid", "solid", "solid")) + 
   labs( y = "Incremental cost (in millions)", x = "Year")
@@ -2173,9 +2173,9 @@ p_cat_cost_supple <- p_catcost_saving[[3]] + facet_custom (~Categories,
                                                                        labels = seq(-5000000, 15000000, 5000000)/1000000)),
                                           scale_new(2,
                                                     scale_y_continuous(limits = 
-                                                                         c(-5000000, 1000000),
-                                                                       breaks = seq(-5000000, 1000000, 1000000),
-                                                                       labels = seq(-5000000, 1000000, 1000000)/1000000)),
+                                                                         c(-20000000, 0),
+                                                                       breaks = seq(-20000000, 0, 5000000),
+                                                                       labels = seq(-20000000, 0, 5000000)/1000000)),
                                           
                                           scale_new(3,
                                                     scale_y_continuous(limits = 
